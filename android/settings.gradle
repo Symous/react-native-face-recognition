@@ -1,0 +1,3 @@
+rootProject.name = 'react-native-face-recognition'
+include ':faceplatform'
+include ':faceplatform-ui'
