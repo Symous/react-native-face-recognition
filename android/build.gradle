@@ -33,7 +33,11 @@ repositories {
 }
 
 dependencies {
+    //compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile files('libs/facesdk.jar')
+    compile files('libs/ast.jar')
+    compile files('libs/baidu_license.jar')
+
     compile 'com.facebook.react:react-native:+'
-    compile project(path: ':faceplatform-ui')
 }
   

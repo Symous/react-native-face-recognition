@@ -47,6 +47,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import com.jwm.facerecognition.R;
+
 /**
  * 人脸采集接口
  */
