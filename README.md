@@ -1,5 +1,5 @@
 
-# -react-native-face-recognition
+# react-native-face-recognition
 
 ## Getting started
 

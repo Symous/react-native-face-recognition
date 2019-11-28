@@ -1,8 +1,8 @@
 
 {
-  "name": "-react-native-face-recognition",
+  "name": "react-native-face-recognition",
   "version": "1.0.0",
-  "description": "",
+  "description": "Face liveness detection using Baidu AI API",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
