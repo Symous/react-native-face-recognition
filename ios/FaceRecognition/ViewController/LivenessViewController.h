@@ -8,7 +8,15 @@
 
 #import "FaceBaseViewController.h"
 
+@protocol LivenessViewControllerDelegate <NSObject>
+
+- (void)livenessDetectionResult:(Boolean)isSucceed images:(NSDictionary *)images error:(NSString *) errorMsg;
+
+@end
+
 @interface LivenessViewController : FaceBaseViewController
+
+@property (nonatomic, weak) id<LivenessViewControllerDelegate>delegate;
 
 - (void)livenesswithList:(NSArray *)livenessArray order:(BOOL)order numberOfLiveness:(NSInteger)numberOfLiveness;
 

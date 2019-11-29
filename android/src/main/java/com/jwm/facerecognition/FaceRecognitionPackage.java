@@ -1,4 +1,3 @@
-
 package com.jwm.facerecognition;
 
 import java.util.Arrays;

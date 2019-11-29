@@ -8,21 +8,23 @@
 
 @implementation FaceRecognition
 
-RCT_EXPORT_MODULE(FaceRecognitionManager)
-
-RCT_EXPORT_METHOD(sampleMethod:(NSString *)stringArgument numberParameter:(nonnull NSNumber *)numberArgument callback:(RCTResponseSenderBlock)callback)
-{
-    // TODO: Implement some actually useful functionality
-    callback(@[[NSString stringWithFormat: @"numberArgument: %@ stringArgument: %@", numberArgument, stringArgument]]);
+-(NSArray*)supportedEvents {
+    return@[@"onFaceLivenessDetectFinished"];
 }
 
+RCT_EXPORT_MODULE(FaceRecognitionManager)
+
 RCT_EXPORT_METHOD(init: (RCTResponseSenderBlock)callback) {
-    NSString* licensePath = [[NSBundle mainBundle] pathForResource:FACE_LICENSE_NAME ofType:FACE_LICENSE_SUFFIX];
-    NSAssert([[NSFileManager defaultManager] fileExistsAtPath:licensePath], @"license文件路径不对，请仔细查看文档");
-    [[FaceSDKManager sharedInstance] setLicenseID:FACE_LICENSE_ID andLocalLicenceFile:licensePath];
-    NSLog(@"canWork = %d",[[FaceSDKManager sharedInstance] canWork]);
-    NSLog(@"version = %@",[[FaceVerifier sharedInstance] getVersion]);
-    callback(@[@YES]);
+    @try {
+        NSString* licensePath = [[NSBundle mainBundle] pathForResource:FACE_LICENSE_NAME ofType:FACE_LICENSE_SUFFIX];
+        NSAssert([[NSFileManager defaultManager] fileExistsAtPath:licensePath], @"license文件路径不对，请仔细查看文档");
+        [[FaceSDKManager sharedInstance] setLicenseID:FACE_LICENSE_ID andLocalLicenceFile:licensePath];
+        NSLog(@"canWork = %d",[[FaceSDKManager sharedInstance] canWork]);
+        NSLog(@"version = %@",[[FaceVerifier sharedInstance] getVersion]);
+        callback(@[@YES]);
+    } @catch (NSException *exception) {
+        callback(@[@NO, exception.reason]);
+    }
 }
 
 RCT_EXPORT_METHOD(detectFaceLiveness) {
@@ -32,12 +34,28 @@ RCT_EXPORT_METHOD(detectFaceLiveness) {
     }
     LivenessViewController* lvc = [[LivenessViewController alloc] init];
     LivingConfigModel* model = [LivingConfigModel sharedInstance];
+    [model.liveActionArray removeAllObjects];
+    [model.liveActionArray addObject:@(FaceLivenessActionTypeLiveEye)];
+    [model.liveActionArray addObject:@(FaceLivenessActionTypeLiveMouth)];
+    [model.liveActionArray addObject:@(FaceLivenessActionTypeLiveYawRight)];
+    [model.liveActionArray addObject:@(FaceLivenessActionTypeLiveYawLeft)];
+    [model.liveActionArray addObject:@(FaceLivenessActionTypeLivePitchUp)];
+    [model.liveActionArray addObject:@(FaceLivenessActionTypeLivePitchDown)];
+    [model.liveActionArray addObject:@(FaceLivenessActionTypeLiveYaw)];
+    
+    //默认检测顺序是随机的
+    //model.isByOrder = YES;
+    
     [lvc livenesswithList:model.liveActionArray order:model.isByOrder numberOfLiveness:model.numOfLiveness];
+    lvc.delegate = self;
     UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:lvc];
     navi.navigationBarHidden = true;
     UIWindow *window = RCTSharedApplication().delegate.window;
     [[window rootViewController] presentViewController:navi animated:true completion:nil];
 }
 
+- (void)livenessDetectionResult:(Boolean)isSucceed images:(NSDictionary *)images error:(NSString *)errorMsg {
+    [self sendEventWithName:@"onFaceLivenessDetectFinished" body:@{@"images": images, @"error": errorMsg}];
+}
 
 @end

@@ -68,48 +68,52 @@
             case LivenessRemindCodeOK: {
                 weakSelf.hasFinished = YES;
                 [self warningStatus:CommonStatus warning:@"非常好"];
-                if (images[@"bestImage"] != nil && [images[@"bestImage"] count] != 0) {
-                    
-                    NSData* data = [[NSData alloc] initWithBase64EncodedString:[images[@"bestImage"] lastObject] options:NSDataBase64DecodingIgnoreUnknownCharacters];
-                    UIImage* bestImage = [UIImage imageWithData:data];
-                    NSLog(@"bestImage = %@",bestImage);
-                }
-                if (images[@"liveEye"] != nil) {
-                    NSData* data = [[NSData alloc] initWithBase64EncodedString:images[@"liveEye"] options:NSDataBase64DecodingIgnoreUnknownCharacters];
-                    UIImage* liveEye = [UIImage imageWithData:data];
-                    NSLog(@"liveEye = %@",liveEye);
-                }
-                if (images[@"liveMouth"] != nil) {
-                    NSData* data = [[NSData alloc] initWithBase64EncodedString:images[@"liveMouth"] options:NSDataBase64DecodingIgnoreUnknownCharacters];
-                    UIImage* liveMouth = [UIImage imageWithData:data];
-                    NSLog(@"liveMouth = %@",liveMouth);
-                }
-                if (images[@"yawRight"] != nil) {
-                    NSData* data = [[NSData alloc] initWithBase64EncodedString:images[@"yawRight"] options:NSDataBase64DecodingIgnoreUnknownCharacters];
-                    UIImage* yawRight = [UIImage imageWithData:data];
-                    NSLog(@"yawRight = %@",yawRight);
-                }
-                if (images[@"yawLeft"] != nil) {
-                    NSData* data = [[NSData alloc] initWithBase64EncodedString:images[@"yawLeft"] options:NSDataBase64DecodingIgnoreUnknownCharacters];
-                    UIImage* yawLeft = [UIImage imageWithData:data];
-                    NSLog(@"yawLeft = %@",yawLeft);
-                }
-                if (images[@"pitchUp"] != nil) {
-                    NSData* data = [[NSData alloc] initWithBase64EncodedString:images[@"pitchUp"] options:NSDataBase64DecodingIgnoreUnknownCharacters];
-                    UIImage* pitchUp = [UIImage imageWithData:data];
-                    NSLog(@"pitchUp = %@",pitchUp);
-                }
-                if (images[@"pitchDown"] != nil) {
-                    NSData* data = [[NSData alloc] initWithBase64EncodedString:images[@"pitchDown"] options:NSDataBase64DecodingIgnoreUnknownCharacters];
-                    UIImage* pitchDown = [UIImage imageWithData:data];
-                    NSLog(@"pitchDown = %@",pitchDown);
-                }
+//                if (images[@"bestImage"] != nil && [images[@"bestImage"] count] != 0) {
+//
+//                    NSData* data = [[NSData alloc] initWithBase64EncodedString:[images[@"bestImage"] lastObject] options:NSDataBase64DecodingIgnoreUnknownCharacters];
+//                    UIImage* bestImage = [UIImage imageWithData:data];
+//                    NSLog(@"bestImage = %@",bestImage);
+//                }
+//                if (images[@"liveEye"] != nil) {
+//                    NSData* data = [[NSData alloc] initWithBase64EncodedString:images[@"liveEye"] options:NSDataBase64DecodingIgnoreUnknownCharacters];
+//                    UIImage* liveEye = [UIImage imageWithData:data];
+//                    NSLog(@"liveEye = %@",liveEye);
+//                }
+//                if (images[@"liveMouth"] != nil) {
+//                    NSData* data = [[NSData alloc] initWithBase64EncodedString:images[@"liveMouth"] options:NSDataBase64DecodingIgnoreUnknownCharacters];
+//                    UIImage* liveMouth = [UIImage imageWithData:data];
+//                    NSLog(@"liveMouth = %@",liveMouth);
+//                }
+//                if (images[@"yawRight"] != nil) {
+//                    NSData* data = [[NSData alloc] initWithBase64EncodedString:images[@"yawRight"] options:NSDataBase64DecodingIgnoreUnknownCharacters];
+//                    UIImage* yawRight = [UIImage imageWithData:data];
+//                    NSLog(@"yawRight = %@",yawRight);
+//                }
+//                if (images[@"yawLeft"] != nil) {
+//                    NSData* data = [[NSData alloc] initWithBase64EncodedString:images[@"yawLeft"] options:NSDataBase64DecodingIgnoreUnknownCharacters];
+//                    UIImage* yawLeft = [UIImage imageWithData:data];
+//                    NSLog(@"yawLeft = %@",yawLeft);
+//                }
+//                if (images[@"pitchUp"] != nil) {
+//                    NSData* data = [[NSData alloc] initWithBase64EncodedString:images[@"pitchUp"] options:NSDataBase64DecodingIgnoreUnknownCharacters];
+//                    UIImage* pitchUp = [UIImage imageWithData:data];
+//                    NSLog(@"pitchUp = %@",pitchUp);
+//                }
+//                if (images[@"pitchDown"] != nil) {
+//                    NSData* data = [[NSData alloc] initWithBase64EncodedString:images[@"pitchDown"] options:NSDataBase64DecodingIgnoreUnknownCharacters];
+//                    UIImage* pitchDown = [UIImage imageWithData:data];
+//                    NSLog(@"pitchDown = %@",pitchDown);
+//                }
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [weakSelf closeAction];
                 });
                 self.circleView.conditionStatusFit = true;
                 [self singleActionSuccess:true];
+                if([self.delegate respondsToSelector:@selector(livenessDetectionResult:images:error:)]){
+                    //[self.delegate LivenessViewController:images code:remindCode];
+                    [self.delegate livenessDetectionResult:YES images:images error:@""];
+                }
                 break;
             }
             case LivenessRemindCodePitchOutofDownRange:
@@ -240,15 +244,21 @@
                 break;
             case LivenessRemindCodeTimeout: {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"remind" message:@"超时" preferredStyle:UIAlertControllerStyleAlert];
-                    UIAlertAction* action = [UIAlertAction actionWithTitle:@"知道啦" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-                        NSLog(@"知道啦");
-                    }];
-                    [alert addAction:action];
-                    UIViewController* fatherViewController = weakSelf.presentingViewController;
-                    [weakSelf dismissViewControllerAnimated:YES completion:^{
-                        [fatherViewController presentViewController:alert animated:YES completion:nil];
-                    }];
+//                    UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"remind" message:@"超时" preferredStyle:UIAlertControllerStyleAlert];
+//                    UIAlertAction* action = [UIAlertAction actionWithTitle:@"知道啦" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+//                        NSLog(@"知道啦");
+//                    }];
+//                    [alert addAction:action];
+//                    UIViewController* fatherViewController = weakSelf.presentingViewController;
+//                    [weakSelf dismissViewControllerAnimated:YES completion:^{
+//                        [fatherViewController presentViewController:alert animated:YES completion:nil];
+//                    }];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                      [weakSelf closeAction];
+                    });
+                    if([self.delegate respondsToSelector:@selector(livenessDetectionResult:images:error:)]) {
+                        [self.delegate livenessDetectionResult:NO images:@[] error:@"timeout"];
+                    }
                 });
                 break;
             }

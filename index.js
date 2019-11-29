@@ -1,9 +1,8 @@
-import { NativeModules, DeviceEventEmitter } from 'react-native';
+import { NativeModules, NativeEventEmitter } from 'react-native';
 
 const { FaceRecognitionManager } = NativeModules;
+const eventEmitter = new NativeEventEmitter(FaceRecognitionManager);
 
-let faceLivenessSuccessListener = null;
-let faceLivenessFailListener = null;
 export function init() {
     return new Promise((resolve, reject) => {
         FaceRecognitionManager.init((status, error) => {
@@ -16,20 +15,11 @@ export function init() {
 export function detectFaceLiveness() {
     FaceRecognitionManager.detectFaceLiveness();
     return new Promise((resolve, reject) => {
-        faceLivenessSuccessListener = DeviceEventEmitter.addListener(
-            'onFaceLivenessDetected',
-            data => {
-                resolve(data);
-                faceLivenessSuccessListener.remove();
-            }
-        );
-        faceLivenessFailListener = DeviceEventEmitter.addListener(
-            'onFaceLivenessTimeout',
-            error => {
-                reject(error);
-                faceLivenessFailListener.remve();
-            }
-        );
+        const listener = eventEmitter.addListener('onFaceLivenessDetectFinished', data => {
+            if (!data.error) resolve(data);
+            else reject(data.error);
+            listener.remove();
+        });
     });
 }
 
