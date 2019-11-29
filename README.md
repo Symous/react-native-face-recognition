@@ -3,11 +3,11 @@
 
 ## Getting started
 
-`$ npm install -react-native-face-recognition --save`
+`$ npm install react-native-face-recognition`
 
 ### Mostly automatic installation
 
-`$ react-native link -react-native-face-recognition`
+`$ react-native link react-native-face-recognition`
 
 ### Manual installation
 
@@ -26,20 +26,27 @@
   - Add `new RNReactNativeFaceRecognitionPackage()` to the list returned by the `getPackages()` method
 2. Append the following lines to `android/settings.gradle`:
   	```
-  	include ':-react-native-face-recognition'
-  	project(':-react-native-face-recognition').projectDir = new File(rootProject.projectDir, 	'../node_modules/-react-native-face-recognition/android')
+  	include ':react-native-face-recognition'
+  	project(':react-native-face-recognition').projectDir = new File(rootProject.projectDir, 	'../node_modules/react-native-face-recognition/android')
   	```
 3. Insert the following lines inside the dependencies block in `android/app/build.gradle`:
   	```
-      compile project(':-react-native-face-recognition')
+      compile project(':react-native-face-recognition')
   	```
 
 
 ## Usage
 ```javascript
-import RNReactNativeFaceRecognition from '-react-native-face-recognition';
-
-// TODO: What to do with the module?
-RNReactNativeFaceRecognition;
+import FaceRecognitionManager from 'react-native-face-recognition';
 ```
+* 初始化SDK
+	```js
+	FaceRecognitionManager.init().then(() => console.log('init'));
+	```
+* 活体检测
+	```js
+	FaceRecognitionManager.detectFaceLiveness(data => {
+		if(!data.error) console.log(data.images);
+	})
+	```
   

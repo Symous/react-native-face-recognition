@@ -118,16 +118,16 @@ public class FaceRecognitionModule extends ReactContextBaseJavaModule {
                         String key = String.valueOf(entry.getKey());
                         String value = String.valueOf(entry.getValue());
                         resultImage.putString("type", key);
-                        resultImage.putString("code", value);
+                        resultImage.putString("image", value);
                         resultImageArray.pushMap(resultImage);
                     }
                     result.putArray("images", resultImageArray);
-                    result.putString("error", null);
+//                    result.putString("error", null);
 
                     // 释放base64ImageMap
                     base64ImageMap = null;
                 } else {
-                    result.putArray("images", null);
+//                    result.putArray("images", null);
                     result.putString("error", data.getStringExtra("error"));
                 }
                 sendEvent("onFaceLivenessDetectFinished", result);

@@ -55,7 +55,21 @@ RCT_EXPORT_METHOD(detectFaceLiveness) {
 }
 
 - (void)livenessDetectionResult:(Boolean)isSucceed images:(NSDictionary *)images error:(NSString *)errorMsg {
-    [self sendEventWithName:@"onFaceLivenessDetectFinished" body:@{@"images": images, @"error": errorMsg}];
+    NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
+    if(isSucceed) {
+        NSMutableArray *resultImageArray = [[NSMutableArray alloc] init];
+        NSArray *keysArray = [images allKeys];
+        for(NSString *key in keysArray) {
+            NSMutableDictionary *resultImage = [[NSMutableDictionary alloc] init];
+            [resultImage setObject:key forKey:@"type"];
+            [resultImage setObject:images[key] forKey:@"image"];
+            [resultImageArray addObject:resultImage];
+        }
+        [result setObject:resultImageArray forKey:@"images"];
+    } else {
+        [result setObject:errorMsg forKey:@"error"];
+    }
+    [self sendEventWithName:@"onFaceLivenessDetectFinished" body:result];
 }
 
 @end
