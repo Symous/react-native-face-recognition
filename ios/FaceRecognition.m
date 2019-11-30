@@ -27,6 +27,22 @@ RCT_EXPORT_METHOD(init: (RCTResponseSenderBlock)callback) {
     }
 }
 
+RCT_EXPORT_METHOD(configLivenessTypes: (NSArray *)types isRandom: (BOOL)random ) {
+    LivingConfigModel* model = [LivingConfigModel sharedInstance];
+    [model.liveActionArray removeAllObjects];
+    if([types count] == 0) {
+        [model.liveActionArray addObject:@(FaceLivenessActionTypeLiveEye)];
+        [model.liveActionArray addObject:@(FaceLivenessActionTypeLiveMouth)];
+        [model.liveActionArray addObject:@(FaceLivenessActionTypeLiveYawRight)];
+        [model.liveActionArray addObject:@(FaceLivenessActionTypeLiveYawLeft)];
+        [model.liveActionArray addObject:@(FaceLivenessActionTypeLivePitchUp)];
+        [model.liveActionArray addObject:@(FaceLivenessActionTypeLivePitchDown)];
+        [model.liveActionArray addObject:@(FaceLivenessActionTypeLiveYaw)];
+    }
+    else [model.liveActionArray addObjectsFromArray:types];
+    model.isByOrder = !random;
+}
+
 RCT_EXPORT_METHOD(detectFaceLiveness) {
     if([[FaceSDKManager sharedInstance] canWork]){
         NSString *licensePath = [[NSBundle mainBundle] pathForResource:FACE_LICENSE_NAME ofType:FACE_LICENSE_SUFFIX];
@@ -34,17 +50,17 @@ RCT_EXPORT_METHOD(detectFaceLiveness) {
     }
     LivenessViewController* lvc = [[LivenessViewController alloc] init];
     LivingConfigModel* model = [LivingConfigModel sharedInstance];
-    [model.liveActionArray removeAllObjects];
-    [model.liveActionArray addObject:@(FaceLivenessActionTypeLiveEye)];
-    [model.liveActionArray addObject:@(FaceLivenessActionTypeLiveMouth)];
-    [model.liveActionArray addObject:@(FaceLivenessActionTypeLiveYawRight)];
-    [model.liveActionArray addObject:@(FaceLivenessActionTypeLiveYawLeft)];
-    [model.liveActionArray addObject:@(FaceLivenessActionTypeLivePitchUp)];
-    [model.liveActionArray addObject:@(FaceLivenessActionTypeLivePitchDown)];
-    [model.liveActionArray addObject:@(FaceLivenessActionTypeLiveYaw)];
-    
-    //默认检测顺序是随机的
-    //model.isByOrder = YES;
+//    [model.liveActionArray removeAllObjects];
+//    [model.liveActionArray addObject:@(FaceLivenessActionTypeLiveEye)];
+//    [model.liveActionArray addObject:@(FaceLivenessActionTypeLiveMouth)];
+//    [model.liveActionArray addObject:@(FaceLivenessActionTypeLiveYawRight)];
+//    [model.liveActionArray addObject:@(FaceLivenessActionTypeLiveYawLeft)];
+//    [model.liveActionArray addObject:@(FaceLivenessActionTypeLivePitchUp)];
+//    [model.liveActionArray addObject:@(FaceLivenessActionTypeLivePitchDown)];
+//    [model.liveActionArray addObject:@(FaceLivenessActionTypeLiveYaw)];
+//
+//    //默认检测顺序是随机的
+//    model.isByOrder = YES;
     
     [lvc livenesswithList:model.liveActionArray order:model.isByOrder numberOfLiveness:model.numOfLiveness];
     lvc.delegate = self;

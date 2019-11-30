@@ -10,5 +10,5 @@ public enum LivenessTypeEnum {
     HeadRight,
     HeadLeftOrRight,
     HeadUp,
-    HeadDown
+    HeadDown,
 }
